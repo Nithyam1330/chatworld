@@ -1,3 +1,4 @@
+import { LOCAL_STORAGE_ENUMS } from './../../shared/constants/localstorage.enums';
 import { Component, OnInit } from '@angular/core';
 import { ApiService } from 'src/app/api/api.service';
 import { Router } from '@angular/router';
@@ -11,14 +12,11 @@ import { QueryValueType } from '@angular/compiler/src/core';
 export class HomePage implements OnInit {
   usersList: any;
   now: Date = new Date();
-  
   constructor(
     private api: ApiService,
     private router: Router
-  ) { 
+  ) {
     this.getUsersList();
-
-    
   }
 
   ngOnInit() {
@@ -26,24 +24,31 @@ export class HomePage implements OnInit {
   }
 
   logout() {
-    console.log('lgout');
     this.api.signOut();
   }
 
   getUsersList() {
-    this.api.db.collection("users")
-    .onSnapshot((querySnapshot)=> {
-      this.usersList=[];
-      console.log('userlist query', querySnapshot);
-      querySnapshot.forEach((doc) =>{
-        this.usersList.push(doc.data());
-        console.log('users list data', doc.data());
+    this.api.db.collection('users')
+      .onSnapshot((querySnapshot) => {
+        this.usersList = [];
+        console.log('userlist query', querySnapshot);
+        querySnapshot.forEach((doc) => {
+          const loggedInUser = localStorage.getItem(LOCAL_STORAGE_ENUMS.loggedInID);
+          if (doc.data().id !== loggedInUser) {
+            this.usersList.push(doc.data());
+          }
+        });
       });
-    });
   }
 
-  openChat(usr: any){
-    this.router.navigate(['/chat-room/'], { queryParams: usr, skipLocationChange: false });
+  openChat(user: any) {
+    this.router.navigate(['/chat-room'], {
+      queryParams: {
+        recieverID: user.id,
+        name: user.name
+      },
+      skipLocationChange: false
+    });
   }
 
 }

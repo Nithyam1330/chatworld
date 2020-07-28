@@ -469,7 +469,7 @@ module.exports = webpackAsyncContext;
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "<ion-app>\n  <ion-router-outlet></ion-router-outlet>\n</ion-app>\n"
+module.exports = "<ion-app>\r\n  <ion-router-outlet></ion-router-outlet>\r\n</ion-app>\r\n"
 
 /***/ }),
 
@@ -550,12 +550,12 @@ __webpack_require__.r(__webpack_exports__);
 
 
 const config = {
-    apiKey: "AIzaSyD1LSDh6J9oHnKdw9rwXH_zziXrkmjrtOA",
-    authDomain: "mrhubby-581b3.firebaseapp.com",
-    databaseURL: "https://mrhubby-581b3.firebaseio.com",
-    projectId: "mrhubby-581b3",
-    storageBucket: "mrhubby-581b3.appspot.com",
-    messagingSenderId: "755938913834"
+    apiKey: 'AIzaSyDAsAsO-C_QctJe4aH37-E4fOaKdpN5bik',
+    authDomain: 'chatapp-a64cb.firebaseapp.com',
+    databaseURL: 'https://chatapp-a64cb.firebaseio.com',
+    projectId: 'chatapp-a64cb',
+    storageBucket: 'chatapp-a64cb.appspot.com',
+    messagingSenderId: '639600483685'
 };
 let ApiService = class ApiService {
     constructor(snack, router) {
@@ -597,7 +597,7 @@ let ApiService = class ApiService {
             };
             localStorage.setItem('loggedIn', this.user.id);
             // create user list on firebase
-            this.db.collection("users").doc(this.user.id).set({
+            this.db.collection('users').doc(this.user.id).set({
                 name: name,
                 id: this.user.id
             });
@@ -623,7 +623,7 @@ let ApiService = class ApiService {
     }
     sendMsg(id, msg, type) {
         let key = this.generateRandomString(16);
-        this.db.collection("chatRoom/").doc(key).set({
+        this.db.collection('chatRoom/').doc(key).set({
             type: type,
             id: id,
             key: key,
@@ -632,8 +632,8 @@ let ApiService = class ApiService {
         });
     }
     generateRandomString(length) {
-        let text = "";
-        let possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        let text = '';
+        let possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
         for (let i = 0; i < length; i++) {
             text += possible.charAt(Math.floor(Math.random() * possible.length));
         }
@@ -1043,7 +1043,7 @@ Object(_angular_platform_browser_dynamic__WEBPACK_IMPORTED_MODULE_2__["platformB
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(/*! e:\ionic 5\messenger\src\main.ts */"./src/main.ts");
+module.exports = __webpack_require__(/*! D:\sai\projects\samples\ionic-messenger-firebase\src\main.ts */"./src/main.ts");
 
 
 /***/ })

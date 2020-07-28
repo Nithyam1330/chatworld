@@ -1,6 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { LOCAL_STORAGE_ENUMS } from './../../shared/constants/localstorage.enums';
+import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ApiService } from 'src/app/api/api.service';
+import { ThrowStmt } from '@angular/compiler';
 
 @Component({
   selector: 'app-chat-room',
@@ -8,27 +10,40 @@ import { ApiService } from 'src/app/api/api.service';
   styleUrls: ['./chat-room.page.scss'],
 })
 export class ChatRoomPage implements OnInit {
-  user: any;
-  chat: string;
-  unsubscribe: any;
+  message = '';
+  senderUnsubscribe: any;
+  reciverUnsubscribe: any;
   messages: any = [];
-  chatKeys: any = [];
-  userType: string;
-  loader: boolean = true;
+  loader = true;
+  recieverID = '';
+  senderID = '';
+  recieverName = '';
+  @ViewChild('scrollMe', { static: true }) private myScrollContainer;
 
   constructor(
     private api: ApiService,
-    private route: ActivatedRoute,
+    private activatedRoute: ActivatedRoute,
     private router: Router
-  ) { 
-    this.route.queryParamMap.subscribe(snap => { 
-      this.user = snap['params'];
+  ) {
+    this.recieverID = this.activatedRoute.snapshot.queryParams.recieverID;
+    this.recieverName = this.activatedRoute.snapshot.queryParams.name;
+    this.senderID = localStorage.getItem(LOCAL_STORAGE_ENUMS.loggedInID);
+    if (this.recieverID && this.senderID) {
       this.getChat();
-    });
-    this.userType = this.api.admin ? 'admin' : 'user';
+    }
   }
 
   ngOnInit() {
+  }
+
+  ionViewDidEnter() {
+    this.scrollToBottom();
+  }
+
+  scrollToBottom(): void {
+    try {
+      this.myScrollContainer.scrollToBottom(1000);
+    } catch (err) { }
   }
 
   goBack() {
@@ -39,44 +54,50 @@ export class ChatRoomPage implements OnInit {
     console.log('lgout');
     this.api.signOut();
   }
-  
+
   sendChat() {
-    this.chat ? console.log(this.chat) : '';
-
-    if(this.chat){
-      this.api.sendMsg(this.user.id, this.chat, this.userType);
+    if (this.message !== '') {
+      this.api.sendMsg(this.senderID, this.recieverID, this.message);
     }
-
-    this.chat = '';
+    this.message = '';
   }
 
   getChat() {
-    console.log('get chat', this.user.id);
-    this.unsubscribe = this.api.db.collection("chatRoom").where("id", "==", this.user.id) 
-    .onSnapshot((querySnapshot)=> {
+    this.senderUnsubscribe = this.api.db.collection(this.senderID)
+      .where('recieverID', '==', this.recieverID)
+      .onSnapshot((senderSnap) => {
+        this.messages = [];
         this.loader = false;
-        querySnapshot.forEach((doc)=> {
-            // doc.data() is never undefined for query doc snapshots
-            let data = doc.data();
-            if(this.chatKeys.indexOf(data.key) < 0){
-              this.messages.push(data);
-              this.chatKeys.push(data.key);
-            }
-            console.log(doc.data());
+        senderSnap.forEach((doc) => {
+          const data = doc.data();
+          this.messages.push(data);
         });
-        this.messages.sort(this.sortDate);
-    });
+        this.reciverUnsubscribe = this.api.db.collection(this.recieverID)
+          .where('recieverID', '==', this.senderID)
+          .onSnapshot((reciverSnap) => {
+            reciverSnap.forEach((doc) => {
+              const data = doc.data();
+              this.messages.push(data);
+            });
+            this.messages.sort(this.sortDate);
+            this.scrollToBottom();
+          });
+      });
   }
 
-  sortDate(a, b) {  
-    var dateA = new Date(a.timestamp.toDate()); 
-    var dateB = new Date(b.timestamp.toDate()); 
-    return dateA > dateB ? 1 : -1;  
+  sortDate(a, b) {
+    if (a.timestamp && b.timestamp) {
+      const dateA = new Date(a.timestamp.toDate());
+      const dateB = new Date(b.timestamp.toDate());
+      return dateA > dateB ? 1 : -1;
+    } else {
+      return -1;
+    }
   };
 
 
   ionViewWillLeave() {
-    this.api.admin ? this.unsubscribe() : '';
-    console.log('unsubscribe successfully');
+    this.senderUnsubscribe();
+    this.reciverUnsubscribe();
   }
 }

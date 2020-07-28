@@ -20,23 +20,23 @@ export class RegisterPage implements OnInit {
     private plt: Platform) {
     this.registerForm = this.formBuilder.group({
       name: new FormControl('', Validators.compose([
-        Validators.required, 
+        Validators.required,
       ])),
       email: new FormControl('', Validators.compose([
-        Validators.required, 
+        Validators.required,
         Validators.email
       ])),
       password: new FormControl('', Validators.compose([
         Validators.required,
-        Validators.minLength(6) 
+        Validators.minLength(6)
       ])),
       confirm_password: new FormControl('', Validators.compose([
-        Validators.required, 
+        Validators.required,
       ])),
-    },{
+    }, {
       validators: MustMatch('password', 'confirm_password')
     })
-   }
+  }
 
   ngOnInit() {
   }

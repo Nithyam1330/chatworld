@@ -7,7 +7,7 @@
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "<ion-header>\r\n    <ion-toolbar _bg-theme-color>\r\n      <ion-icon *ngIf=\"api.admin\" slot=\"start\" name=\"arrow-round-back\" padding style=\"padding-right: 0px\" (click)=\"goBack()\"></ion-icon>\r\n      <ion-avatar slot=\"start\" padding>\r\n          <img src=\"../../../assets/imgs/avatar/avatar9.jpg\">\r\n      </ion-avatar>\r\n      <ion-title no-padding>{{ user?.name }}</ion-title>\r\n      <ion-icon name=\"videocam\" slot=\"end\" padding></ion-icon>\r\n      <ion-icon name=\"call\" slot=\"end\" padding></ion-icon>\r\n      <ion-icon *ngIf=\"api.admin\" name=\"more\" slot=\"end\" padding></ion-icon>\r\n      <ion-icon *ngIf=\"!api.admin\" name=\"log-out\" (click)=\"logout()\" slot=\"end\" padding></ion-icon>\r\n    </ion-toolbar>\r\n  </ion-header>\r\n\r\n\r\n<ion-content bg-sky>\r\n  <div *ngFor=\"let mess of messages\">\r\n    <div flex flow-right *ngIf=\"mess.type==userType\">\r\n        <ion-card bg-light>\r\n            <ion-card-content style=\"padding-bottom: 0px;\">\r\n            {{ mess.msg }}  \r\n            </ion-card-content>\r\n            <p text-right no-margin light-time>{{ api.formatAMPM(mess.timestamp.toDate()) }}</p>\r\n        </ion-card>\r\n    </div>\r\n    <div flex *ngIf=\"mess.type!=userType\">\r\n        <ion-card bg-white>\r\n            <ion-card-content style=\"padding-bottom: 0px;\">\r\n            {{ mess.msg }}  \r\n            </ion-card-content>\r\n            <p text-right no-margin light-time>{{ api.formatAMPM(mess.timestamp.toDate()) }}</p>\r\n        </ion-card>\r\n    </div>\r\n  </div>\r\n  \r\n  <div *ngIf=\"loader\" flex v-center h-center style=\"height: 100%;\">\r\n      <ion-spinner name=\"crescent\" color=\"success\" style=\"width: 100px; height: 100px;\"></ion-spinner>\r\n  </div>\r\n</ion-content>\r\n\r\n\r\n<ion-footer>\r\n    <ion-toolbar>\r\n        <div slot=\"start\" padding>\r\n          😀\r\n        </div>\r\n        <ion-input [(ngModel)] = \"chat\"\r\n          placeholder=\"Type here...\"\r\n        ></ion-input>\r\n        <ion-icon (click)=\"sendChat()\" name=\"send\" slot=\"end\" padding></ion-icon>\r\n    </ion-toolbar>\r\n</ion-footer>"
+module.exports = "<ion-header>\r\n  <ion-toolbar _bg-theme-color>\r\n    <ion-icon slot=\"start\" name=\"arrow-round-back\" padding style=\"padding-right: 0px\" (click)=\"goBack()\">\r\n    </ion-icon>\r\n    <ion-avatar slot=\"start\" padding (click)=\"goBack()\">\r\n      <img src=\"../../../assets/imgs/avatar/avatar9.jpg\">\r\n    </ion-avatar>\r\n    {{recieverName | titlecase}}\r\n    <!-- <ion-icon name=\"videocam\" slot=\"end\" padding></ion-icon> -->\r\n    <!-- <ion-icon name=\"call\" slot=\"end\" padding></ion-icon> -->\r\n    <ion-icon name=\"log-out\" (click)=\"logout()\" slot=\"end\" padding></ion-icon>\r\n  </ion-toolbar>\r\n</ion-header>\r\n\r\n\r\n<ion-content bg-sky [scrollEvents]=\"true\" #scrollMe>\r\n  <div style=\"padding-bottom: 70px;\">\r\n    <div *ngFor=\"let message of messages;let i = index\">\r\n      <ng-container *ngIf=\"message.senderID === senderID\">\r\n        <div flex flow-right>\r\n          <ion-card bg-light>\r\n            <ion-card-content style=\"padding-bottom: 0px;\">\r\n              {{ message.msg }}\r\n            </ion-card-content>\r\n            <p text-right no-margin light-time>{{ api.formatAMPM(message?.timestamp?.toDate()) }}</p>\r\n          </ion-card>\r\n        </div>\r\n      </ng-container>\r\n      <ng-container *ngIf=\"message.senderID !== senderID\">\r\n\r\n        <div flex>\r\n          <ion-card bg-white>\r\n            <ion-card-content style=\"padding-bottom: 0px;\">\r\n              {{ message.msg }}\r\n            </ion-card-content>\r\n            <p text-right no-margin light-time>{{ api.formatAMPM(message?.timestamp?.toDate()) }}</p>\r\n          </ion-card>\r\n        </div>\r\n      </ng-container>\r\n    </div>\r\n  </div>\r\n\r\n  <div *ngIf=\"loader\" flex v-center h-center style=\"height: 100%;\">\r\n    <ion-spinner name=\"crescent\" color=\"success\" style=\"width: 100px; height: 100px;\"></ion-spinner>\r\n  </div>\r\n</ion-content>\r\n\r\n\r\n<ion-footer>\r\n  <ion-toolbar>\r\n    <div slot=\"start\" padding>\r\n      😀\r\n    </div>\r\n    <ion-input [(ngModel)]=\"message\" placeholder=\"Type here...\"></ion-input>\r\n    <ion-icon (click)=\"sendChat()\" name=\"send\" slot=\"end\" padding></ion-icon>\r\n  </ion-toolbar>\r\n</ion-footer>"
 
 /***/ }),
 
@@ -81,28 +81,43 @@ module.exports = "ion-card {\n  width: 80%;\n}\n\n[flow-right] {\n  -webkit-box-
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ChatRoomPage", function() { return ChatRoomPage; });
 /* harmony import */ var tslib__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! tslib */ "./node_modules/tslib/tslib.es6.js");
-/* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @angular/core */ "./node_modules/@angular/core/fesm2015/core.js");
-/* harmony import */ var _angular_router__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @angular/router */ "./node_modules/@angular/router/fesm2015/router.js");
-/* harmony import */ var src_app_api_api_service__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! src/app/api/api.service */ "./src/app/api/api.service.ts");
+/* harmony import */ var _shared_constants_localstorage_enums__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./../../shared/constants/localstorage.enums */ "./src/app/shared/constants/localstorage.enums.ts");
+/* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @angular/core */ "./node_modules/@angular/core/fesm2015/core.js");
+/* harmony import */ var _angular_router__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @angular/router */ "./node_modules/@angular/router/fesm2015/router.js");
+/* harmony import */ var src_app_api_api_service__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! src/app/api/api.service */ "./src/app/api/api.service.ts");
+
 
 
 
 
 let ChatRoomPage = class ChatRoomPage {
-    constructor(api, route, router) {
+    constructor(api, activatedRoute, router) {
         this.api = api;
-        this.route = route;
+        this.activatedRoute = activatedRoute;
         this.router = router;
+        this.message = '';
         this.messages = [];
-        this.chatKeys = [];
         this.loader = true;
-        this.route.queryParamMap.subscribe(snap => {
-            this.user = snap['params'];
+        this.recieverID = '';
+        this.senderID = '';
+        this.recieverName = '';
+        this.recieverID = this.activatedRoute.snapshot.queryParams.recieverID;
+        this.recieverName = this.activatedRoute.snapshot.queryParams.name;
+        this.senderID = localStorage.getItem(_shared_constants_localstorage_enums__WEBPACK_IMPORTED_MODULE_1__["LOCAL_STORAGE_ENUMS"].loggedInID);
+        if (this.recieverID && this.senderID) {
             this.getChat();
-        });
-        this.userType = this.api.admin ? 'admin' : 'user';
+        }
     }
     ngOnInit() {
+    }
+    ionViewDidEnter() {
+        this.scrollToBottom();
+    }
+    scrollToBottom() {
+        try {
+            this.myScrollContainer.scrollToBottom(1000);
+        }
+        catch (err) { }
     }
     goBack() {
         this.router.navigate(['/home'], { skipLocationChange: false });
@@ -112,54 +127,67 @@ let ChatRoomPage = class ChatRoomPage {
         this.api.signOut();
     }
     sendChat() {
-        this.chat ? console.log(this.chat) : '';
-        if (this.chat) {
-            this.api.sendMsg(this.user.id, this.chat, this.userType);
+        if (this.message !== '') {
+            this.api.sendMsg(this.senderID, this.recieverID, this.message);
         }
-        this.chat = '';
+        this.message = '';
     }
     getChat() {
-        console.log('get chat', this.user.id);
-        this.unsubscribe = this.api.db.collection("chatRoom").where("id", "==", this.user.id)
-            .onSnapshot((querySnapshot) => {
+        this.senderUnsubscribe = this.api.db.collection(this.senderID)
+            .where('recieverID', '==', this.recieverID)
+            .onSnapshot((senderSnap) => {
+            this.messages = [];
             this.loader = false;
-            querySnapshot.forEach((doc) => {
-                // doc.data() is never undefined for query doc snapshots
-                let data = doc.data();
-                if (this.chatKeys.indexOf(data.key) < 0) {
-                    this.messages.push(data);
-                    this.chatKeys.push(data.key);
-                }
-                console.log(doc.data());
+            senderSnap.forEach((doc) => {
+                const data = doc.data();
+                this.messages.push(data);
             });
-            this.messages.sort(this.sortDate);
+            this.reciverUnsubscribe = this.api.db.collection(this.recieverID)
+                .where('recieverID', '==', this.senderID)
+                .onSnapshot((reciverSnap) => {
+                reciverSnap.forEach((doc) => {
+                    const data = doc.data();
+                    this.messages.push(data);
+                });
+                this.messages.sort(this.sortDate);
+                this.scrollToBottom();
+            });
         });
     }
     sortDate(a, b) {
-        var dateA = new Date(a.timestamp.toDate());
-        var dateB = new Date(b.timestamp.toDate());
-        return dateA > dateB ? 1 : -1;
+        if (a.timestamp && b.timestamp) {
+            const dateA = new Date(a.timestamp.toDate());
+            const dateB = new Date(b.timestamp.toDate());
+            return dateA > dateB ? 1 : -1;
+        }
+        else {
+            return -1;
+        }
     }
     ;
     ionViewWillLeave() {
-        this.api.admin ? this.unsubscribe() : '';
-        console.log('unsubscribe successfully');
+        this.senderUnsubscribe();
+        this.reciverUnsubscribe();
     }
 };
 ChatRoomPage.ctorParameters = () => [
-    { type: src_app_api_api_service__WEBPACK_IMPORTED_MODULE_3__["ApiService"] },
-    { type: _angular_router__WEBPACK_IMPORTED_MODULE_2__["ActivatedRoute"] },
-    { type: _angular_router__WEBPACK_IMPORTED_MODULE_2__["Router"] }
+    { type: src_app_api_api_service__WEBPACK_IMPORTED_MODULE_4__["ApiService"] },
+    { type: _angular_router__WEBPACK_IMPORTED_MODULE_3__["ActivatedRoute"] },
+    { type: _angular_router__WEBPACK_IMPORTED_MODULE_3__["Router"] }
 ];
+tslib__WEBPACK_IMPORTED_MODULE_0__["__decorate"]([
+    Object(_angular_core__WEBPACK_IMPORTED_MODULE_2__["ViewChild"])('scrollMe', { static: true }),
+    tslib__WEBPACK_IMPORTED_MODULE_0__["__metadata"]("design:type", Object)
+], ChatRoomPage.prototype, "myScrollContainer", void 0);
 ChatRoomPage = tslib__WEBPACK_IMPORTED_MODULE_0__["__decorate"]([
-    Object(_angular_core__WEBPACK_IMPORTED_MODULE_1__["Component"])({
+    Object(_angular_core__WEBPACK_IMPORTED_MODULE_2__["Component"])({
         selector: 'app-chat-room',
         template: __webpack_require__(/*! raw-loader!./chat-room.page.html */ "./node_modules/raw-loader/index.js!./src/app/pages/chat-room/chat-room.page.html"),
         styles: [__webpack_require__(/*! ./chat-room.page.scss */ "./src/app/pages/chat-room/chat-room.page.scss")]
     }),
-    tslib__WEBPACK_IMPORTED_MODULE_0__["__metadata"]("design:paramtypes", [src_app_api_api_service__WEBPACK_IMPORTED_MODULE_3__["ApiService"],
-        _angular_router__WEBPACK_IMPORTED_MODULE_2__["ActivatedRoute"],
-        _angular_router__WEBPACK_IMPORTED_MODULE_2__["Router"]])
+    tslib__WEBPACK_IMPORTED_MODULE_0__["__metadata"]("design:paramtypes", [src_app_api_api_service__WEBPACK_IMPORTED_MODULE_4__["ApiService"],
+        _angular_router__WEBPACK_IMPORTED_MODULE_3__["ActivatedRoute"],
+        _angular_router__WEBPACK_IMPORTED_MODULE_3__["Router"]])
 ], ChatRoomPage);
 
 

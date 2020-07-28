@@ -1,3 +1,4 @@
+import { LOCAL_STORAGE_ENUMS } from './../shared/constants/localstorage.enums';
 import { Injectable } from '@angular/core';
 import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, Router } from '@angular/router';
 import { Observable } from 'rxjs';
@@ -7,22 +8,18 @@ import { Observable } from 'rxjs';
 })
 export class AuthGuard implements CanActivate {
 
-  constructor(private router: Router) {}
-  // example use of guard
-  //  { path: 'special', component: SpecialPage, canActivate: [AuthGuard] },
+  constructor(private router: Router) { }
 
   canActivate(
     next: ActivatedRouteSnapshot,
     state: RouterStateSnapshot): Observable<boolean> | Promise<boolean> | boolean {
-      //const loggedIn = false; // replace with actual user auth checking logic
-    let user = localStorage.getItem('loggedIn');
-     console.log({user});
-      if (!user) {
-        this.router.navigate(['/login'], { skipLocationChange: true });
-      }
+    const user = localStorage.getItem(LOCAL_STORAGE_ENUMS.loggedInID);
+    if (!user) {
+      this.router.navigate(['/login'], { skipLocationChange: true });
+    }
 
-      return true;
-    
+    return true;
+
   }
 
 }

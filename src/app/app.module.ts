@@ -11,17 +11,25 @@ import { AppRoutingModule } from './app-routing.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { IonicStorageModule } from '@ionic/storage';
 import { AmdModule } from './amd.module';
+import { AddUserPage } from './pages/add-user/add-user.page';
+import { FormsModule } from '@angular/forms';
 
 @NgModule({
-  declarations: [AppComponent],
-  entryComponents: [],
+  declarations: [
+    AppComponent,
+    AddUserPage],
+  entryComponents: [
+    AddUserPage
+  ],
   imports: [
-    BrowserModule, 
-    IonicModule.forRoot(), 
+    BrowserModule,
+    IonicModule.forRoot(),
     IonicStorageModule.forRoot(),
-    AppRoutingModule, 
+    AppRoutingModule,
     AmdModule,
-    BrowserAnimationsModule],
+    BrowserAnimationsModule,
+    FormsModule
+  ],
   providers: [
     StatusBar,
     SplashScreen,
@@ -29,4 +37,4 @@ import { AmdModule } from './amd.module';
   ],
   bootstrap: [AppComponent]
 })
-export class AppModule {}
+export class AppModule { }

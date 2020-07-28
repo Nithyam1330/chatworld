@@ -10,10 +10,12 @@
 var map = {
 	"./pages/chat-room/chat-room.module": [
 		"./src/app/pages/chat-room/chat-room.module.ts",
+		"common",
 		"pages-chat-room-chat-room-module"
 	],
 	"./pages/home/home.module": [
 		"./src/app/pages/home/home.module.ts",
+		"common",
 		"pages-home-home-module"
 	],
 	"./pages/login/login.module": [
@@ -35,7 +37,7 @@ function webpackAsyncContext(req) {
 	}
 
 	var ids = map[req], id = ids[0];
-	return __webpack_require__.e(ids[1]).then(function() {
+	return Promise.all(ids.slice(1).map(__webpack_require__.e)).then(function() {
 		return __webpack_require__(id);
 	});
 }
@@ -575,7 +577,7 @@ var ApiService = /** @class */ (function () {
     }
     ApiService.prototype.configApp = function () {
         firebase__WEBPACK_IMPORTED_MODULE_2__["initializeApp"](config);
-        this.db = firebase__WEBPACK_IMPORTED_MODULE_2__["firestore"](); //firebase.database();
+        this.db = firebase__WEBPACK_IMPORTED_MODULE_2__["firestore"]();
     };
     ApiService.prototype.signin = function (email, password) {
         var _this = this;
@@ -586,15 +588,13 @@ var ApiService = /** @class */ (function () {
                 id: email.substring(0, email.indexOf('@')).toLowerCase()
             };
             localStorage.setItem('loggedIn', _this.user.id);
-            _this.admin ? _this.router.navigate(['/home'], { skipLocationChange: false }) : _this.router.navigate(['/chat-room/'], { queryParams: { name: 'Messenger', id: _this.user.id }, skipLocationChange: false });
+            _this.router.navigate(['home']);
             console.log('login', user);
         })
             .catch(function (error) {
-            // Handle Errors here.
             _this.loader = false;
             console.log('error while signin', error);
             _this.snack.openSnackBar(error.message, 'ok');
-            // ...
         });
     };
     ApiService.prototype.signUp = function (name, email, password) {
@@ -612,15 +612,13 @@ var ApiService = /** @class */ (function () {
                 name: name,
                 id: _this.user.id
             });
-            _this.router.navigate(['/chat-room/'], { queryParams: { name: 'Messenger', id: _this.user.id }, skipLocationChange: false });
+            _this.router.navigate(['/home']);
             console.log('register', user);
         })
             .catch(function (error) {
-            // Handle Errors here.
             _this.loader = false;
             console.log('error while signup', error);
             _this.snack.openSnackBar(error.message, 'ok');
-            // ...
         });
     };
     ApiService.prototype.signOut = function () {
@@ -633,14 +631,14 @@ var ApiService = /** @class */ (function () {
             console.log('error while logout', error);
         });
     };
-    ApiService.prototype.sendMsg = function (id, msg, type) {
-        var key = this.generateRandomString(16);
-        this.db.collection('chatRoom/').doc(key).set({
-            type: type,
-            id: id,
-            key: key,
-            msg: msg,
-            timestamp: firebase__WEBPACK_IMPORTED_MODULE_2__["firestore"].FieldValue.serverTimestamp()
+    ApiService.prototype.sendMsg = function (senderIDInput, recieverIDInput, message) {
+        var keyInput = this.generateRandomString(16);
+        this.db.collection(senderIDInput).doc(keyInput).set({
+            senderID: senderIDInput,
+            recieverID: recieverIDInput,
+            msg: message,
+            timestamp: firebase__WEBPACK_IMPORTED_MODULE_2__["firestore"].FieldValue.serverTimestamp(),
+            key: keyInput
         });
     };
     ApiService.prototype.generateRandomString = function (length) {
@@ -652,14 +650,19 @@ var ApiService = /** @class */ (function () {
         return text;
     };
     ApiService.prototype.formatAMPM = function (date) {
-        var hours = date.getHours();
-        var minutes = date.getMinutes();
-        var ampm = hours >= 12 ? 'PM' : 'AM';
-        hours = hours % 12;
-        hours = hours ? hours : 12; // the hour '0' should be '12'
-        minutes = minutes < 10 ? '0' + minutes : minutes;
-        var strTime = hours + ':' + minutes + ' ' + ampm;
-        return strTime;
+        if (date) {
+            var hours = date.getHours();
+            var minutes = date.getMinutes();
+            var ampm = hours >= 12 ? 'PM' : 'AM';
+            hours = hours % 12;
+            hours = hours ? hours : 12; // the hour '0' should be '12'
+            minutes = minutes < 10 ? '0' + minutes : minutes;
+            var strTime = hours + ':' + minutes + ' ' + ampm;
+            return strTime;
+        }
+        else {
+            return '';
+        }
     };
     ApiService.ctorParameters = function () { return [
         { type: _services_snackbar_service__WEBPACK_IMPORTED_MODULE_3__["SnackbarService"] },
@@ -936,12 +939,9 @@ var ReAuthGuard = /** @class */ (function () {
     // example use of guard
     //  { path: 'special', component: SpecialPage, canActivate: [AuthGuard] },
     ReAuthGuard.prototype.canActivate = function (next, state) {
-        //const loggedIn = false; // replace with actual user auth checking logic
         var user = localStorage.getItem('loggedIn');
-        console.log({ user: user });
         if (user) {
-            this.api.admin ? this.router.navigate(['/home'], { skipLocationChange: true }) : this.router.navigate(['/chat-room/'], { queryParams: { name: 'Messenger', id: user }, skipLocationChange: false });
-            console.log('login', user);
+            this.router.navigate(['home']);
         }
         return true;
     };

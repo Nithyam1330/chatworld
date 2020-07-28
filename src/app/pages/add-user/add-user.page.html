@@ -1,0 +1,20 @@
+<ion-header>
+  <ion-toolbar _bg-theme-color>
+    <ion-title>Add Friend</ion-title>
+    <ion-icon name="close" (click)="close()" slot="end" class="ion-padding"></ion-icon>
+  </ion-toolbar>
+  <ion-toolbar>
+    <ion-searchbar showCancelButton="focus" [(ngModel)]="searchByUserId" (keyup.enter)="seachUserListById()">
+    </ion-searchbar>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ng-container *ngFor="let user of searchList">
+    <ion-item (click)="navigateToSelectedUser(user)">
+      <ion-label>
+        <strong>{{user.name}}</strong>
+      </ion-label>
+    </ion-item>
+  </ng-container>
+</ion-content>

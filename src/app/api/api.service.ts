@@ -103,7 +103,6 @@ export class ApiService {
       timestamp: firebase.firestore.FieldValue.serverTimestamp(),
       key: keyInput
     });
-
   }
 
   generateRandomString(length) {

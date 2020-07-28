@@ -1,14 +1,13 @@
 <ion-header>
   <ion-toolbar _bg-theme-color>
-    <ion-avatar slot="start" padding>
+    <ion-avatar slot="start" class="ion-padding">
       <img src="../../../assets/imgs/avatar/avatar9.jpg">
     </ion-avatar>
-    <ion-title>Messenger</ion-title>
-    <ion-icon name="text" slot="end" padding></ion-icon>
-    <ion-icon name="log-out" (click)="logout()" slot="end" padding></ion-icon>
+    <ion-title>{{loggedInUser?.name}}</ion-title>
+    <ion-icon name="add-circle" slot="end" class="ion-padding" (click)="addUserModal()"></ion-icon>
+    <ion-icon name="log-out" (click)="logout()" slot="end" class="ion-padding"></ion-icon>
   </ion-toolbar>
 </ion-header>
-
 <ion-content>
   <ion-item *ngFor="let usr of usersList" (click)="openChat(usr)">
     <ion-avatar slot="start">
@@ -19,7 +18,7 @@
       <p>See, my chat</p>
     </ion-label>
     <div>
-      <p no-margin gray-time>{{ api.formatAMPM(now) }}</p>
+      <p class="ion-no-margin" gray-time>{{ api.formatAMPM(now) }}</p>
     </div>
 
   </ion-item>

@@ -774,6 +774,23 @@ const findCheckedOption = (el, tagName) => {
 
 
 
+/***/ }),
+
+/***/ "./src/app/shared/constants/localstorage.enums.ts":
+/*!********************************************************!*\
+  !*** ./src/app/shared/constants/localstorage.enums.ts ***!
+  \********************************************************/
+/*! exports provided: LOCAL_STORAGE_ENUMS */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "LOCAL_STORAGE_ENUMS", function() { return LOCAL_STORAGE_ENUMS; });
+const LOCAL_STORAGE_ENUMS = {
+    loggedInID: 'loggedIn'
+};
+
+
 /***/ })
 
 }]);

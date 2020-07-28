@@ -10,10 +10,12 @@
 var map = {
 	"./pages/chat-room/chat-room.module": [
 		"./src/app/pages/chat-room/chat-room.module.ts",
+		"common",
 		"pages-chat-room-chat-room-module"
 	],
 	"./pages/home/home.module": [
 		"./src/app/pages/home/home.module.ts",
+		"common",
 		"pages-home-home-module"
 	],
 	"./pages/login/login.module": [
@@ -35,7 +37,7 @@ function webpackAsyncContext(req) {
 	}
 
 	var ids = map[req], id = ids[0];
-	return __webpack_require__.e(ids[1]).then(function() {
+	return Promise.all(ids.slice(1).map(__webpack_require__.e)).then(function() {
 		return __webpack_require__(id);
 	});
 }
@@ -566,7 +568,7 @@ let ApiService = class ApiService {
     }
     configApp() {
         firebase__WEBPACK_IMPORTED_MODULE_2__["initializeApp"](config);
-        this.db = firebase__WEBPACK_IMPORTED_MODULE_2__["firestore"](); //firebase.database();
+        this.db = firebase__WEBPACK_IMPORTED_MODULE_2__["firestore"]();
     }
     signin(email, password) {
         firebase__WEBPACK_IMPORTED_MODULE_2__["auth"]().signInWithEmailAndPassword(email, password)
@@ -576,15 +578,13 @@ let ApiService = class ApiService {
                 id: email.substring(0, email.indexOf('@')).toLowerCase()
             };
             localStorage.setItem('loggedIn', this.user.id);
-            this.admin ? this.router.navigate(['/home'], { skipLocationChange: false }) : this.router.navigate(['/chat-room/'], { queryParams: { name: 'Messenger', id: this.user.id }, skipLocationChange: false });
+            this.router.navigate(['home']);
             console.log('login', user);
         })
             .catch((error) => {
-            // Handle Errors here.
             this.loader = false;
             console.log('error while signin', error);
             this.snack.openSnackBar(error.message, 'ok');
-            // ...
         });
     }
     signUp(name, email, password) {
@@ -601,15 +601,13 @@ let ApiService = class ApiService {
                 name: name,
                 id: this.user.id
             });
-            this.router.navigate(['/chat-room/'], { queryParams: { name: 'Messenger', id: this.user.id }, skipLocationChange: false });
+            this.router.navigate(['/home']);
             console.log('register', user);
         })
             .catch((error) => {
-            // Handle Errors here.
             this.loader = false;
             console.log('error while signup', error);
             this.snack.openSnackBar(error.message, 'ok');
-            // ...
         });
     }
     signOut() {
@@ -621,14 +619,14 @@ let ApiService = class ApiService {
             console.log('error while logout', error);
         });
     }
-    sendMsg(id, msg, type) {
-        let key = this.generateRandomString(16);
-        this.db.collection('chatRoom/').doc(key).set({
-            type: type,
-            id: id,
-            key: key,
-            msg: msg,
-            timestamp: firebase__WEBPACK_IMPORTED_MODULE_2__["firestore"].FieldValue.serverTimestamp()
+    sendMsg(senderIDInput, recieverIDInput, message) {
+        const keyInput = this.generateRandomString(16);
+        this.db.collection(senderIDInput).doc(keyInput).set({
+            senderID: senderIDInput,
+            recieverID: recieverIDInput,
+            msg: message,
+            timestamp: firebase__WEBPACK_IMPORTED_MODULE_2__["firestore"].FieldValue.serverTimestamp(),
+            key: keyInput
         });
     }
     generateRandomString(length) {
@@ -640,14 +638,19 @@ let ApiService = class ApiService {
         return text;
     }
     formatAMPM(date) {
-        var hours = date.getHours();
-        var minutes = date.getMinutes();
-        var ampm = hours >= 12 ? 'PM' : 'AM';
-        hours = hours % 12;
-        hours = hours ? hours : 12; // the hour '0' should be '12'
-        minutes = minutes < 10 ? '0' + minutes : minutes;
-        var strTime = hours + ':' + minutes + ' ' + ampm;
-        return strTime;
+        if (date) {
+            let hours = date.getHours();
+            let minutes = date.getMinutes();
+            const ampm = hours >= 12 ? 'PM' : 'AM';
+            hours = hours % 12;
+            hours = hours ? hours : 12; // the hour '0' should be '12'
+            minutes = minutes < 10 ? '0' + minutes : minutes;
+            const strTime = hours + ':' + minutes + ' ' + ampm;
+            return strTime;
+        }
+        else {
+            return '';
+        }
     }
 };
 ApiService.ctorParameters = () => [
@@ -914,12 +917,9 @@ let ReAuthGuard = class ReAuthGuard {
     // example use of guard
     //  { path: 'special', component: SpecialPage, canActivate: [AuthGuard] },
     canActivate(next, state) {
-        //const loggedIn = false; // replace with actual user auth checking logic
-        let user = localStorage.getItem('loggedIn');
-        console.log({ user });
+        const user = localStorage.getItem('loggedIn');
         if (user) {
-            this.api.admin ? this.router.navigate(['/home'], { skipLocationChange: true }) : this.router.navigate(['/chat-room/'], { queryParams: { name: 'Messenger', id: user }, skipLocationChange: false });
-            console.log('login', user);
+            this.router.navigate(['home']);
         }
         return true;
     }

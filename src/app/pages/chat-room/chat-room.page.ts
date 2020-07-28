@@ -3,6 +3,7 @@ import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ApiService } from 'src/app/api/api.service';
 import { ThrowStmt } from '@angular/compiler';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-chat-room',
@@ -11,8 +12,8 @@ import { ThrowStmt } from '@angular/compiler';
 })
 export class ChatRoomPage implements OnInit {
   message = '';
-  senderUnsubscribe: any;
-  reciverUnsubscribe: any;
+  senderUnsubscribe: Subscription;
+  reciverUnsubscribe: Subscription;
   messages: any = [];
   loader = true;
   recieverID = '';
@@ -47,7 +48,7 @@ export class ChatRoomPage implements OnInit {
   }
 
   goBack() {
-    this.router.navigate(['/home'], { skipLocationChange: false });
+    this.router.navigate(['home'], { skipLocationChange: false });
   }
 
   logout() {
@@ -66,19 +67,22 @@ export class ChatRoomPage implements OnInit {
     this.senderUnsubscribe = this.api.db.collection(this.senderID)
       .where('recieverID', '==', this.recieverID)
       .onSnapshot((senderSnap) => {
-        this.messages = [];
         this.loader = false;
-        senderSnap.forEach((doc) => {
-          const data = doc.data();
-          this.messages.push(data);
-        });
         this.reciverUnsubscribe = this.api.db.collection(this.recieverID)
           .where('recieverID', '==', this.senderID)
           .onSnapshot((reciverSnap) => {
+            this.messages = [];
+            const senderMessages = [];
+            const recieverMessages = [];
+            senderSnap.forEach((doc) => {
+              const data = doc.data();
+              senderMessages.push(data);
+            });
             reciverSnap.forEach((doc) => {
               const data = doc.data();
-              this.messages.push(data);
+              recieverMessages.push(data);
             });
+            this.messages = senderMessages.concat(recieverMessages);
             this.messages.sort(this.sortDate);
             this.scrollToBottom();
           });
@@ -93,11 +97,14 @@ export class ChatRoomPage implements OnInit {
     } else {
       return -1;
     }
-  };
+  }
 
 
   ionViewWillLeave() {
-    this.senderUnsubscribe();
-    this.reciverUnsubscribe();
+    try {
+      this.senderUnsubscribe.unsubscribe();
+      this.reciverUnsubscribe.unsubscribe();
+    } catch (e) {
+    }
   }
 }
